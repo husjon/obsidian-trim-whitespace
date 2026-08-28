@@ -291,6 +291,8 @@ export default class TrimWhitespace extends Plugin {
 
 		const options = this.settings;
 
+		// We add EOLs back in according to the setting,
+		//  since it already contains one EOL from earlier in the steps we subtract 1
 		if (trimmed.length + options.TrailingLinesKeepMin >= input.length) {
 			trimmed += "\n".repeat(options.TrailingLinesKeepMin);
 		} else {
