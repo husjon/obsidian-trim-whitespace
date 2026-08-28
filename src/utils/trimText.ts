@@ -225,10 +225,7 @@ export default function handleTextTrim(
 		terms = swapData.terms;
 	}
 
-	let trimmed = trimText(text, {
-		...settings,
-		TrailingLinesKeepMax: 0,
-	});
+	let trimmed = trimText(text, settings);
 
 	if (skipCodeBlocks) {
 		trimmed = replaceSwappedTokens(trimmed, CODE_SWAP_PREFIX, terms);
