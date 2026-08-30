@@ -65,22 +65,25 @@ Trim Whitespace also adds a ribbon button to trim document whitespace. Hold **sh
 
 ## Settings
 
-| Name                    | Description                                                                     |
-| ----------------------- | ------------------------------------------------------------------------------- |
-| Trim on Manual Save     | **Manually trim document** with CTRL / CMD + S                                  |
-| Auto-Trim               | **Automatically trim document** when modified, according to the settings below. |
-| Auto-Trim Delay         | Time to wait **in seconds** before auto-trimming.                               |
-| Preserve Code Blocks    | Whether to preserve whitespace within code blocks.                              |
-| Trim Trailing Spaces    | Trim **spaces** at the **end of each line**.                                    |
-| Trim Trailing Tabs      | Trim **tabs** at the **end of each line**.                                      |
-| Trim Trailing Lines     | Trim **empty** lines at the **end of the document**.                            |
-| Preserve Indented Lists | Whether to preserve whitespace if used for list indentation.                    |
-| Trim Leading Spaces     | Trim **spaces** at the **start of each line**.                                  |
-| Trim Leading Tabs       | Trim **tabs** at the **start of each line**.                                    |
-| Trim Leading Lines      | Trim **lines** at the **start of the document**.                                |
-| Trim Multiple Spaces    | Trim **groups** of **multiple inline spaces**.                                  |
-| Trim Multiple Tabs      | Trim **groups** of **multiple inline tabs**.                                    |
-| Trim Multiple Lines     | Trim **groups** of **multiple blank lines**.                                    |
+| Name                        | Description                                                                     |
+| --------------------------- | ------------------------------------------------------------------------------- |
+| Trim on Manual Save         | **Manually trim document** with CTRL / CMD + S                                  |
+| Auto-Trim                   | **Automatically trim document** when modified, according to the settings below. |
+| Auto-Trim Delay             | Time to wait **in seconds** before auto-trimming.                               |
+| Preserve Code Blocks        | Whether to preserve whitespace within code blocks.                              |
+| Convert Non-Breaking Spaces | Whether to convert non-breaking spaces to regular spaces.                       |
+| Trim Trailing Spaces        | Trim **spaces** at the **end of each line**.                                    |
+| Trim Trailing Tabs          | Trim **tabs** at the **end of each line**.                                      |
+| Trim Trailing Lines         | Trim **empty** lines at the **end of the document**.                            |
+| Min Trailing Lines          | Minimum trailing lines to keep; lines are added when needed.                    |
+| Max Trailing Lines          | Maximum trailing lines to keep; extra lines are removed.                        |
+| Preserve Indented Lists     | Whether to preserve whitespace if used for list indentation.                    |
+| Trim Leading Spaces         | Trim **spaces** at the **start of each line**.                                  |
+| Trim Leading Tabs           | Trim **tabs** at the **start of each line**.                                    |
+| Trim Leading Lines          | Trim **lines** at the **start of the document**.                                |
+| Trim Multiple Spaces        | Trim **groups** of **multiple inline spaces**.                                  |
+| Trim Multiple Tabs          | Trim **groups** of **multiple inline tabs**.                                    |
+| Trim Multiple Lines         | Trim **groups** of **multiple blank lines**.                                    |
 
 ---
 
