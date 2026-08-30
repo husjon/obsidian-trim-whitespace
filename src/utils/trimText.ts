@@ -124,10 +124,18 @@ function _trimMultipleTabs(str: string): string {
  * @param str Text to trim
  * @return    Trimmed text
  */
-function _trimMultipleLines(str: string): string {
+function _trimMultipleLines(
+	str: string,
+	preserveTrailingLines: boolean,
+): string {
+	const trailingLineLookahead = preserveTrailingLines
+		? "(?=\\r?\\n[^\\r\\n])"
+		: "(?=(\\n|\\r|$))";
+
 	return str.replace(
 		// /(?<=[^\r\n])[\r\n]+?(?=(?:\r?\n\r?\n|\r\r)[^\r\n])/gm,
-		/^\s+(?=(\n|\r|$))/gm,
+		// /^\s+(?=(\n|\r|$))/gm,
+		new RegExp(`^\\s+${trailingLineLookahead}`, "gm"),
 		"",
 	);
 }
@@ -198,7 +206,7 @@ function trimText(text: string, options: TrimWhitespaceSettings): string {
 	}
 
 	if (options.TrimMultipleLines) {
-		trimmed = _trimMultipleLines(trimmed);
+		trimmed = _trimMultipleLines(trimmed, options.TrimTrailingLines);
 	}
 
 	return trimmed;
