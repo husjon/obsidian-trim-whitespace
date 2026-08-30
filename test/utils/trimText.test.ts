@@ -193,9 +193,19 @@ function _trimMultipleLinesKeep3EOLs(input: string): string {
 	const settings: TrimWhitespaceSettings = {
 		...ALL_FALSE,
 		TrimTrailingLines: true,
-		TrailingLinesKeepMax: 0,
+		TrailingLinesKeepMin: 3,
+		TrailingLinesKeepMax: 3,
 	};
-	return handleTextTrim(input, settings) + "\n".repeat(3);
+	return handleTextTrim(input, settings);
+}
+function _trimMultipleLinesKeep1to2EOLs(input: string): string {
+	const settings: TrimWhitespaceSettings = {
+		...ALL_FALSE,
+		TrimTrailingLines: true,
+		TrailingLinesKeepMin: 1,
+		TrailingLinesKeepMax: 2,
+	};
+	return handleTextTrim(input, settings);
 }
 function _trimMultipleLinesAndTrailingSpacesTabs(input: string): string {
 	const settings: TrimWhitespaceSettings = {
@@ -309,6 +319,39 @@ describe("trimming trailing lines", () => {
 			trailing: "\n\n\n",
 		});
 		expect(_trimMultipleLinesKeep3EOLs(input)).toEqual(trimmed);
+	});
+	test("trailing lines to trim, add 3 lines", () => {
+		const input = _mkText({
+			trailing: "",
+		});
+		const trimmed = _mkText({
+			trailing: "\n\n\n",
+		});
+		expect(_trimMultipleLinesKeep3EOLs(input)).toEqual(trimmed);
+	});
+	test("trailing lines to trim, keep last 2 lines (out of 1-2)", () => {
+		const input = _mkText({
+			trailing: "\n\n\n\n\n",
+		});
+		const trimmed = _mkText({
+			trailing: "\n\n",
+		});
+		expect(_trimMultipleLinesKeep1to2EOLs(input)).toEqual(trimmed);
+	});
+	test("trailing lines to trim, add 1 line (out of 1-2)", () => {
+		const input = _mkText({
+			trailing: "",
+		});
+		const trimmed = _mkText({
+			trailing: "\n",
+		});
+		expect(_trimMultipleLinesKeep1to2EOLs(input)).toEqual(trimmed);
+	});
+	test("trailing lines to trim, preserve 1 line (within 1-2)", () => {
+		const input = _mkText({
+			trailing: "\n",
+		});
+		expect(_trimMultipleLinesKeep1to2EOLs(input)).toEqual(input);
 	});
 	test("trailing mixed whitespace to trim", () => {
 		const input = _mkText({

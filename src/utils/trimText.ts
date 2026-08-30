@@ -20,16 +20,25 @@ function _trimTrailingCharacters(str: string, chars: string[]): string {
 }
 
 /**
- * Trims empty lines at the end of the document
+ * Ensures the document's trailing lines match the configured limits
  *
- * @param str Text to trim
- * @return    Trimmed text
+ * @param str     Text to trim
+ * @param options Preferences to control trimming
+ * @return        Trimmed text
  */
-function _trimTrailingLines(
+function _fixTrailingLines(
 	str: string,
 	options: TrimWhitespaceSettings,
 ): string {
-	return str.trimEnd() + "\n".repeat(options.TrailingLinesKeepMax);
+	const trimmed = str.trimEnd();
+	const removedNewlines = str.slice(trimmed.length).split("\n").length - 1;
+	const newlineCount = Math.min(
+		Math.max(removedNewlines, options.TrailingLinesKeepMin),
+		options.TrailingLinesKeepMax,
+	);
+
+	// Obsidian's internal editor always uses LF, regardless of host OS
+	return trimmed + "\n".repeat(newlineCount);
 }
 
 /** Leading */
@@ -154,7 +163,7 @@ function trimText(text: string, options: TrimWhitespaceSettings): string {
 	}
 
 	if (options.TrimTrailingLines) {
-		trimmed = _trimTrailingLines(trimmed, options);
+		trimmed = _fixTrailingLines(trimmed, options);
 	}
 
 	if (options.TrimLeadingSpaces || options.TrimLeadingTabs) {
@@ -198,8 +207,9 @@ function trimText(text: string, options: TrimWhitespaceSettings): string {
 /**
  * Trims text, skipping code blocks if applicable
  *
- * @param  text Text to trim
- * @return      Trimmed text
+ * @param text     Text to trim
+ * @param settings Preferences to control trimming
+ * @return         Trimmed text
  */
 export default function handleTextTrim(
 	text: string,
