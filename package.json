@@ -7,7 +7,7 @@
 		"dev": "obsidian-plugin dev src/main.ts",
 		"build": "obsidian-plugin build src/main.ts",
 		"watchTest": "jest --watchAll",
-		"test": "jest",
+		"test": "jest --verbose",
 		"version": "node scripts/set-versions.mjs && git add {manifest,versions}.json",
 		"bump-version": "pnpm version --no-git-checks --tag-version-prefix ''",
 		"lint": "eslint src"
