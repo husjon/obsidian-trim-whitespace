@@ -8,8 +8,8 @@ import {
 } from "obsidian";
 
 import { TrimWhitespaceSettingTab } from "./settings";
-import handleTextTrim from "./utils/trimText";
-import getCursorFenceIndices from "./utils/getCursorFenceIndices";
+import { trimDocumentText, TrimDocumentMode } from "./utils/trimDocumentText";
+import { trimSelectionText } from "./utils/trimSelectionText";
 import { TrimWhitespaceSettings } from "typings";
 
 const DEFAULT_SETTINGS: TrimWhitespaceSettings = {
@@ -168,30 +168,27 @@ export default class TrimWhitespace extends Plugin {
 			return;
 		}
 
-		const input = editor.getSelection();
+		const toCursor = editor.posToOffset(editor.getCursor("to"));
+		const result = trimSelectionText({
+			selectedText: editor.getSelection(),
+			toOffset: toCursor,
+			settings: this.settings,
+		});
 
-		// Make sure something is selected
-		if (input.length == 0) {
+		if (result.status == "empty-selection") {
 			new Notice("Select text to trim!");
 			return;
 		}
 
-		const trimmed = handleTextTrim(input, this.settings);
-
-		// Only process if text is different
-		if (trimmed == input) {
+		if (result.status == "unchanged") {
 			return;
 		}
 
-		editor.replaceSelection(trimmed);
-
-		const toCursor = editor.posToOffset(editor.getCursor("to"));
-		const toDelta = trimmed.length;
-		const newFrom = toCursor - toDelta;
+		editor.replaceSelection(result.replacementText);
 
 		editor.setSelection(
-			editor.offsetToPos(newFrom),
-			editor.offsetToPos(toCursor),
+			editor.offsetToPos(result.fromOffset),
+			editor.offsetToPos(result.toOffset),
 		);
 	}
 
@@ -215,88 +212,26 @@ export default class TrimWhitespace extends Plugin {
 		const toCursor = editor.getCursor("to");
 		const toCursorOffset = editor.posToOffset(toCursor);
 
-		let trimmed;
-		let newFromCursorOffset = fromCursorOffset;
-		let newToCursorOffset = toCursorOffset;
+		const mode: TrimDocumentMode =
+			causedBy == TrimTrigger.AutoTrim
+				? "trim-outside-active-region"
+				: "trim-whole-document";
+		const result = trimDocumentText({
+			text: input,
+			fromOffset: fromCursorOffset,
+			toOffset: toCursorOffset,
+			settings: this.settings,
+			mode,
+		});
 
-		if (causedBy == TrimTrigger.AutoTrim) {
-			// Get 'from' cursor, snapping to nearest code fence or whitespace block
-			const fromCursorFenceIndices = getCursorFenceIndices(
-				input,
-				fromCursorOffset,
-				this.settings.PreserveCodeBlocks,
-			);
-
-			// Get 'to' cursor, snapping to nearest code fence or whitespace block
-			const toCursorFenceIndices = getCursorFenceIndices(
-				input,
-				toCursorOffset,
-				this.settings.PreserveCodeBlocks,
-			);
-
-			// Get and trim the text before the cursor
-			const textBeforeCursor = input.slice(
-				0,
-				fromCursorFenceIndices.start,
-			);
-			const textBeforeCursorTrimmed = handleTextTrim(
-				textBeforeCursor,
-				{ ...this.settings, TrimTrailingLines: false },
-			);
-
-			// Get the active text, where the cursor is
-			const textAtCursor = input.slice(
-				fromCursorFenceIndices.start,
-				toCursorFenceIndices.end,
-			);
-
-			// Get and trim the text after the cursor
-			const textAfterCursor = input.slice(toCursorFenceIndices.end);
-			const textAfterCursorTrimmed = handleTextTrim(
-				textAfterCursor,
-				{ ...this.settings, TrimLeadingLines: false },
-			);
-
-			// Concatenate the trimmed and current text blocks
-			trimmed =
-				textBeforeCursorTrimmed + textAtCursor + textAfterCursorTrimmed;
-
-			// Calculate new selection offsets
-			newFromCursorOffset =
-				fromCursorOffset -
-				textBeforeCursor.length +
-				textBeforeCursorTrimmed.length;
-			newToCursorOffset =
-				toCursorOffset -
-				textBeforeCursor.length +
-				textBeforeCursorTrimmed.length;
-		} else {
-			trimmed = handleTextTrim(input, this.settings);
-
-			// Some tedium to calculate new selection start/end values
-			const fromBeforeText = input.slice(0, fromCursorOffset);
-			const fromBeforeTrimmed = handleTextTrim(
-				fromBeforeText,
-				{ ...this.settings, TrimTrailingLines: false },
-			);
-
-			const toBeforeText = input.slice(0, toCursorOffset);
-			const toBeforeTrimmed = handleTextTrim(toBeforeText, this.settings);
-
-			// Calculate new selection offsets
-			newToCursorOffset = toBeforeTrimmed.length;
-			newFromCursorOffset = Math.min(fromBeforeTrimmed.length, newToCursorOffset);
-		}
-
-		// Only process if text is different
-		if (trimmed == input) {
+		if (result.status == "unchanged") {
 			return;
 		}
 
-		editor.setValue(trimmed);
+		editor.setValue(result.text);
 		editor.setSelection(
-			editor.offsetToPos(newFromCursorOffset),
-			editor.offsetToPos(newToCursorOffset),
+			editor.offsetToPos(result.fromOffset),
+			editor.offsetToPos(result.toOffset),
 		);
 	}
 
