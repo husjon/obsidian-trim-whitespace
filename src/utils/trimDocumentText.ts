@@ -28,23 +28,67 @@ function trimWholeDocument({
 	toOffset,
 	settings,
 }: TrimDocumentInput): TrimDocumentResult {
-	const trimmedText = handleTextTrim(text, settings);
+	const isSelection = fromOffset !== toOffset;
 
-	const fromBeforeText = text.slice(0, fromOffset);
-	const fromBeforeTrimmed = handleTextTrim(fromBeforeText, {
+	// Handle input text from the beginning up to the start of the selection / cursor
+	const textBeforeSelection = text.slice(0, fromOffset);
+	const textBeforeSelectionTrimmed = handleTextTrim(textBeforeSelection, {
 		...settings,
 		TrimTrailingLines: false,
+		TrimLeadingLines: false,
+	});
+	// The new selection fromOffset is the trimmed length up to the selection
+	let newFromOffset = textBeforeSelectionTrimmed.length;
+
+	// Handle input text that is in the selection
+	const textInSelection = text.slice(fromOffset, toOffset);
+	let textInSelectionTrimmed = "";
+	if (
+		text.slice(fromOffset - 1, fromOffset) === " " ||
+		text.slice(fromOffset, fromOffset + 1) === " "
+	)
+		textInSelectionTrimmed += " ";
+
+	if (isSelection) {
+		textInSelectionTrimmed += handleTextTrim(textInSelection, {
+			...settings,
+			TrimTrailingLines: false,
+		});
+		// Add space back in at the end if there were one
+		if (
+			text.slice(toOffset - 1, toOffset) === " " ||
+			text.slice(toOffset, toOffset + 1) === " "
+		)
+			textInSelectionTrimmed += " ";
+	}
+	// If the selection only contains spaces, keep at most 1
+	textInSelectionTrimmed = textInSelectionTrimmed.replace(/^[ ]+$/, " ");
+
+	// The new toOffset is the trimmed text from the beginning including the selection
+	let newToOffset = (textBeforeSelectionTrimmed + textInSelectionTrimmed)
+		.length;
+
+	// Use the newFromOffset as the new offset for both if we're not working with a selection.
+	// This avoid accidental selections and selection shifts
+	if (!isSelection) newToOffset = newFromOffset;
+
+	// Handle input text from the end of the selection / cursor to the end of the input
+	const textAfterSelection = text.slice(toOffset);
+	let textAfterSelectionTrimmed = handleTextTrim(textAfterSelection, {
+		...settings,
+		TrimLeadingLines: false,
 	});
 
-	const toBeforeText = text.slice(0, toOffset);
-	const toBeforeTrimmed = handleTextTrim(toBeforeText, settings);
-
-	const newToOffset = toBeforeTrimmed.length;
+	// Combine all 3 text sections
+	const result =
+		textBeforeSelectionTrimmed +
+		textInSelectionTrimmed +
+		textAfterSelectionTrimmed;
 
 	return {
-		status: trimmedText == text ? "unchanged" : "changed",
-		text: trimmedText,
-		fromOffset: Math.min(fromBeforeTrimmed.length, newToOffset),
+		status: result === text ? "unchanged" : "changed",
+		text: handleTextTrim(result, settings),
+		fromOffset: newFromOffset,
 		toOffset: newToOffset,
 	};
 }
