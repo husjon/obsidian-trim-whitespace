@@ -75,7 +75,7 @@ function _trimLeadingCharacters(
  * @return    Trimmed text
  */
 function _trimLeadingLines(str: string): string {
-	return str.trimStart();
+	return str.replace(/^\n+/, "");
 }
 
 /** Multiple */
