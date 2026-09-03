@@ -476,7 +476,9 @@ describe("trimming document text", () => {
 		},
 	);
 
-	const WELL_FORMED_FIXTURES = [
+	const WELL_FORMED_FIXTURES: Array<
+		[string, string, TrimWhitespaceSettings]
+	> = [
 		["trailing spaces", "one  \ntwo  \nthree  \n", TRAILING_SPACES],
 		["leading spaces", "  one\n  two\n  three\n", LEADING_SPACES],
 		["multiple spaces", "one   two\nthree   four\n", MULTIPLE_SPACES],
