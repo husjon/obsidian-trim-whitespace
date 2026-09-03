@@ -30,7 +30,7 @@ function _fixTrailingLines(
 	str: string,
 	options: TrimWhitespaceSettings,
 ): string {
-	const trimmed = str.trimEnd();
+	const trimmed = str.replace(/\n+$/, "");
 	const removedNewlines = str.slice(trimmed.length).split("\n").length - 1;
 	const newlineCount = Math.min(
 		Math.max(removedNewlines, options.TrailingLinesKeepMin),
