@@ -99,22 +99,52 @@ function trimOutsideSelection({
 	toOffset,
 	settings,
 }: TrimDocumentInput): TrimDocumentResult {
+	const isSelection = fromOffset !== toOffset;
+
+	// Get the boundary of whitespace characters surrounding the cursor / start of selection
 	const fromCursorFenceIndices = getCursorFenceIndices(
 		text,
 		fromOffset,
 		settings.PreserveCodeBlocks,
 	);
+
+	// Get the relative cursor position of the start of the selection inside the fence
+	const fromOffsetInsideFence = fromOffset - fromCursorFenceIndices.start;
+
+	// Get the text from the very beginning to the start of the whitespace boundary
+	const textBeforeCursorFence = text.slice(0, fromCursorFenceIndices.start);
+	const textBeforeCursorFenceTrimmed = handleTextTrim(textBeforeCursorFence, {
+		...settings,
+		TrimTrailingLines: false,
+		TrimLeadingLines: false,
+	});
+
+	// The new selection fromOffset with respect to the cursor fence
+	let newFromOffset =
+		textBeforeCursorFenceTrimmed.length + fromOffsetInsideFence;
+
+	// Get the boundary of whitespace characters surrounding the cursor / end of selection
 	const toCursorFenceIndices = getCursorFenceIndices(
 		text,
 		toOffset,
 		settings.PreserveCodeBlocks,
 	);
 
-	const textBeforeCursor = text.slice(0, fromCursorFenceIndices.start);
-	const textBeforeCursorTrimmed = handleTextTrim(textBeforeCursor, {
+	// get the relative position of the end of the selection inside the fence
+	const toOffsetInsideFence = toOffset - toCursorFenceIndices.start;
+
+	const textAfterCursorFence = text.slice(
+		fromCursorFenceIndices.end,
+		toCursorFenceIndices.start,
+	);
+	const textAfterCursorFenceTrimmed = handleTextTrim(textAfterCursorFence, {
 		...settings,
 		TrimTrailingLines: false,
 	});
+
+	let newToOffset = isSelection
+		? textAfterCursorFenceTrimmed.length + toOffsetInsideFence
+		: newFromOffset;
 
 	const textAtCursor = text.slice(
 		fromCursorFenceIndices.start,
@@ -128,15 +158,13 @@ function trimOutsideSelection({
 	});
 
 	const trimmedText =
-		textBeforeCursorTrimmed + textAtCursor + textAfterCursorTrimmed;
-	const cursorOffsetDelta =
-		textBeforeCursorTrimmed.length - textBeforeCursor.length;
+		textBeforeCursorFenceTrimmed + textAtCursor + textAfterCursorTrimmed;
 
 	return {
 		status: trimmedText == text ? "unchanged" : "changed",
 		text: trimmedText,
-		fromOffset: fromOffset + cursorOffsetDelta,
-		toOffset: toOffset + cursorOffsetDelta,
+		fromOffset: newFromOffset,
+		toOffset: newToOffset,
 	};
 }
 
