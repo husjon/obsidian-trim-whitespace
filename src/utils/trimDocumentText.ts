@@ -30,54 +30,60 @@ function trimWholeDocument({
 }: TrimDocumentInput): TrimDocumentResult {
 	const isSelection = fromOffset !== toOffset;
 
-	// Handle input text from the beginning up to the start of the selection / cursor
-	const textBeforeSelection = text.slice(0, fromOffset);
-	const textBeforeSelectionTrimmed = handleTextTrim(textBeforeSelection, {
+	const fromCursorFenceIndices = getCursorFenceIndices(
+		text,
+		fromOffset,
+		settings.PreserveCodeBlocks,
+	);
+
+	const toCursorFenceIndices = getCursorFenceIndices(
+		text,
+		toOffset,
+		settings.PreserveCodeBlocks,
+	);
+
+	// Handle input text from the beginning up to the end selection fence
+	const textBeforeSelection = text.slice(0, fromCursorFenceIndices.end) + "X"; // extra character added to force trailing lines to be retained
+	let textBeforeSelectionTrimmed = handleTextTrim(textBeforeSelection, {
 		...settings,
-		TrimTrailingLines: false,
-		TrimLeadingLines: false,
-	});
-	// The new selection fromOffset is the trimmed length up to the selection
-	let newFromOffset = textBeforeSelectionTrimmed.length;
+		TrailingLinesKeepMax: 0, // we do not want any new trailing lines to be added
+	}).slice(0, -1); // extra character stripped off
 
-	// Handle input text that is in the selection
-	const textInSelection = text.slice(fromOffset, toOffset);
-	let textInSelectionTrimmed = "";
-	if (
-		text.slice(fromOffset - 1, fromOffset) === " " ||
-		text.slice(fromOffset, fromOffset + 1) === " "
-	)
-		textInSelectionTrimmed += " ";
-
-	if (isSelection) {
-		textInSelectionTrimmed += handleTextTrim(textInSelection, {
-			...settings,
-			TrimTrailingLines: false,
-		});
-		// Add space back in at the end if there were one
-		if (
-			text.slice(toOffset - 1, toOffset) === " " ||
-			text.slice(toOffset, toOffset + 1) === " "
-		)
-			textInSelectionTrimmed += " ";
-	}
-	// If the selection only contains spaces, keep at most 1
-	textInSelectionTrimmed = textInSelectionTrimmed.replace(/^[ ]+$/, " ");
-
-	// The new toOffset is the trimmed text from the beginning including the selection
-	let newToOffset = (textBeforeSelectionTrimmed + textInSelectionTrimmed)
-		.length;
-
-	// Use the newFromOffset as the new offset for both if we're not working with a selection.
-	// This avoid accidental selections and selection shifts
-	if (!isSelection) newToOffset = newFromOffset;
+	// Handle input text from the beginning up to the end selection fence
+	const textInSelection =
+		"X" + // extra character added to force leading characters to be retained
+		text.slice(fromCursorFenceIndices.start, toCursorFenceIndices.end) +
+		"X"; // extra character added to force trailing characters to be retained
+	let textInSelectionTrimmed = handleTextTrim(textInSelection, {
+		...settings,
+		TrailingLinesKeepMax: 0, // we do not want any new trailing lines to be added
+	}).slice(1, -1); // extra character stripped off
 
 	// Handle input text from the end of the selection / cursor to the end of the input
-	const textAfterSelection = text.slice(toOffset);
-	let textAfterSelectionTrimmed = handleTextTrim(textAfterSelection, {
-		...settings,
-		TrimLeadingLines: false,
-	});
+	const textAfterSelection =
+		"X" + // extra character added to force leading characters to be retained
+		text.slice(toCursorFenceIndices.start);
+	let textAfterSelectionTrimmed = handleTextTrim(
+		textAfterSelection,
+		settings,
+	).slice(1);
+
+	// strip of characters that are overlapping between the selections
+	if (
+		textBeforeSelectionTrimmed.slice(-1) ===
+		textInSelectionTrimmed.slice(0, 1)
+	)
+		textBeforeSelectionTrimmed = textBeforeSelectionTrimmed.slice(0, -1);
+
+	if (textAfterSelectionTrimmed.slice(0) === textInSelectionTrimmed.slice(-1))
+		textAfterSelectionTrimmed = textAfterSelectionTrimmed.slice(1);
+
+	// Calculate the new offsets based on the trimmed lengths
+	const newFromOffset = textBeforeSelectionTrimmed.length;
+	const newToOffset =
+		fromOffset === toOffset
+			? newFromOffset
+			: newFromOffset + textInSelectionTrimmed.length;
 
 	// Combine all 3 text sections
 	const result =
