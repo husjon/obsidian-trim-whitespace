@@ -30,70 +30,96 @@ function trimWholeDocument({
 }: TrimDocumentInput): TrimDocumentResult {
 	const isSelection = fromOffset !== toOffset;
 
+	// Get whitespace boundaries around start of selection / cursor
 	const fromCursorFenceIndices = getCursorFenceIndices(
 		text,
 		fromOffset,
 		settings.PreserveCodeBlocks,
 	);
 
+	// Get whitespace boundaries around end of selection / cursor
 	const toCursorFenceIndices = getCursorFenceIndices(
 		text,
 		toOffset,
 		settings.PreserveCodeBlocks,
 	);
 
-	// Handle input text from the beginning up to the end selection fence
-	const textBeforeSelection = text.slice(0, fromCursorFenceIndices.end) + "X"; // extra character added to force trailing lines to be retained
-	let textBeforeSelectionTrimmed = handleTextTrim(textBeforeSelection, {
+	// In case the text input starts with whitespace, we'd like to know how many
+	const beginningFence = getCursorFenceIndices(
+		text,
+		0,
+		settings.PreserveCodeBlocks,
+	);
+	// In case the text input ends with whitespace, we'd like to know how many
+	const endFence = getCursorFenceIndices(
+		text,
+		text.length,
+		settings.PreserveCodeBlocks,
+	);
+
+	// Get relative cursor position within the whitespace boundaries
+	let fromCurRel = fromOffset - fromCursorFenceIndices.start;
+	// In case the whitespace boundary is at the beginning of the text, reset relative position
+	if (fromCursorFenceIndices.end <= beginningFence.end) fromCurRel = 0;
+
+	let toCurRel = toOffset - toCursorFenceIndices.start;
+	// In case the whitespace boundary is at the end of the text, reset relative position
+	// if (toCursorFenceIndices.start <= endFence.start) fromCurRel = 0;
+
+	// Handle input text from the beginning up to the start of the selection fence
+	const section1 = text.slice(0, fromCursorFenceIndices.start) + "X"; // "X" appended to maintain leading and trailing whitespace
+	const section1Trimmed = handleTextTrim(section1, {
 		...settings,
 		TrailingLinesKeepMax: 0, // we do not want any new trailing lines to be added
-	}).slice(0, -1); // extra character stripped off
+	}).slice(0, -1);
 
-	// Handle input text from the beginning up to the end selection fence
-	const textInSelection =
-		"X" + // extra character added to force leading characters to be retained
-		text.slice(fromCursorFenceIndices.start, toCursorFenceIndices.end) +
-		"X"; // extra character added to force trailing characters to be retained
-	let textInSelectionTrimmed = handleTextTrim(textInSelection, {
+	// Handle input text spanning the start selection fence
+	const section2 =
+		"X" + // "X" prepended to maintain leading and trailing whitespace
+		text.slice(fromCursorFenceIndices.start, fromCursorFenceIndices.end) +
+		"X"; // "X" appended to maintain leading and trailing whitespace
+	const section2Trimmed = handleTextTrim(section2, {
 		...settings,
 		TrailingLinesKeepMax: 0, // we do not want any new trailing lines to be added
-	}).slice(1, -1); // extra character stripped off
+	}).slice(1, -1);
 
-	// Handle input text from the end of the selection / cursor to the end of the input
-	const textAfterSelection =
-		"X" + // extra character added to force leading characters to be retained
-		text.slice(toCursorFenceIndices.start);
-	let textAfterSelectionTrimmed = handleTextTrim(
-		textAfterSelection,
+	// Handle input text spanning the end selection fence
+	const section3 =
+		"X" + // "X" prepended to maintain leading and trailing whitespace
+		text.slice(fromCursorFenceIndices.end, toCursorFenceIndices.start) +
+		"X"; // "X" appended to maintain leading and trailing whitespace
+	const section3Trimmed = handleTextTrim(section3, {
+		...settings,
+		TrailingLinesKeepMax: 0, // we do not want any new trailing lines to be added
+	}).slice(1, -1);
+
+	// Handle input text spanning the end selection fence
+	const section4 =
+		"X" + // "X"  prepended to maintain leading and trailing whitespace
+		text.slice(
+			isSelection ? toCursorFenceIndices.start : toCursorFenceIndices.end,
+		);
+	const section4Trimmed = handleTextTrim(section4, {
+		...settings,
+	}).slice(1);
+
+	let newFromOffset =
+		section1Trimmed.length + Math.min(section2Trimmed.length, fromCurRel);
+	let newToOffset = isSelection // TODO: newToOffset might need to be calculated from the end instead
+		? section1Trimmed.length +
+			section2Trimmed.length +
+			section3Trimmed.length +
+			toCurRel
+		: newFromOffset;
+
+	let result = handleTextTrim(
+		section1Trimmed + section2Trimmed + section3Trimmed + section4Trimmed,
 		settings,
-	).slice(1);
-
-	// strip of characters that are overlapping between the selections
-	if (
-		textBeforeSelectionTrimmed.slice(-1) ===
-		textInSelectionTrimmed.slice(0, 1)
-	)
-		textBeforeSelectionTrimmed = textBeforeSelectionTrimmed.slice(0, -1);
-
-	if (textAfterSelectionTrimmed.slice(0) === textInSelectionTrimmed.slice(-1))
-		textAfterSelectionTrimmed = textAfterSelectionTrimmed.slice(1);
-
-	// Calculate the new offsets based on the trimmed lengths
-	const newFromOffset = textBeforeSelectionTrimmed.length;
-	const newToOffset =
-		fromOffset === toOffset
-			? newFromOffset
-			: newFromOffset + textInSelectionTrimmed.length;
-
-	// Combine all 3 text sections
-	const result =
-		textBeforeSelectionTrimmed +
-		textInSelectionTrimmed +
-		textAfterSelectionTrimmed;
+	);
 
 	return {
 		status: result === text ? "unchanged" : "changed",
-		text: handleTextTrim(result, settings),
+		text: result,
 		fromOffset: newFromOffset,
 		toOffset: newToOffset,
 	};
