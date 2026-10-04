@@ -1,6 +1,6 @@
 # Trim Whitespace
 
-[![Obsidian Downloads](https://img.shields.io/badge/dynamic/json?color=7e6ad6&labelColor=34208c&label=Obsidian%20Downloads&query=$['obsidian-trim-whitespace'].downloads&url=https://raw.githubusercontent.com/obsidianmd/obsidian-releases/master/community-plugin-stats.json&)](obsidian://show-plugin?id=obsidian-trim-whitespace) ![GitHub stars](https://img.shields.io/github/stars/zlovatt/obsidian-trim-whitespace?style=flat)
+[![Obsidian Downloads](https://img.shields.io/badge/dynamic/json?color=7e6ad6&labelColor=34208c&label=Obsidian%20Downloads&query=$['obsidian-trim-whitespace'].downloads&url=https://raw.githubusercontent.com/obsidianmd/obsidian-releases/master/community-plugin-stats.json&)](obsidian://show-plugin?id=obsidian-trim-whitespace) ![GitHub stars](https://img.shields.io/github/stars/husjon/obsidian-trim-whitespace?style=flat)
 
 Trim Whitespace trims unnecessary blank characters from your Obsidian documents. This is a common feature in code editing software, and mostly exists to pare down irksome document clutter.
 
@@ -89,7 +89,7 @@ Trim Whitespace also adds a ribbon button to trim document whitespace. Hold **sh
 To install, either:
 
 1. Download from the [Obsidian Community Plugin library](obsidian://show-plugin?id=obsidian-trim-whitespace), or
-2. Install manually with the zip in [Releases](http://github.com/zlovatt/obsidian-trim-whitespace/releases)
+2. Install manually with the zip in [Releases](http://github.com/husjon/obsidian-trim-whitespace/releases)
 
 ---
 
