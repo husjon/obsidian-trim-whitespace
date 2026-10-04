@@ -130,8 +130,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Initial commit!
 
 [Unreleased]: https://github.com/husjon/obsidian-trim-whitespace/compare/main...develop
-[v0.3.0]: https://github.com/husjon/obsidian-trim-whitespace/compare/v0.2.2...v0.3.0
-[v0.2.2]: https://github.com/husjon/obsidian-trim-whitespace/compare/v0.2.1...v0.2.2
-[v0.2.1]: https://github.com/husjon/obsidian-trim-whitespace/compare/v0.2.0...v0.2.1
-[v0.2.0]: https://github.com/husjon/obsidian-trim-whitespace/compare/v0.1.0...v0.2.0
-[v0.1.0]: https://github.com/husjon/obsidian-trim-whitespace/compare/a53bdb3...v0.1.0
+[v0.3.0]: https://github.com/husjon/obsidian-trim-whitespace/compare/0.2.2...0.3.0
+[v0.2.2]: https://github.com/husjon/obsidian-trim-whitespace/compare/0.2.1...0.2.2
+[v0.2.1]: https://github.com/husjon/obsidian-trim-whitespace/compare/0.2.0...0.2.1
+[v0.2.0]: https://github.com/husjon/obsidian-trim-whitespace/compare/0.1.0...0.2.0
+[v0.1.0]: https://github.com/husjon/obsidian-trim-whitespace/compare/a53bdb3...0.1.0
