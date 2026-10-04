@@ -1,4 +1,3 @@
-import { EOL } from "node:os";
 import { TrimWhitespaceSettings } from "typings";
 
 import {
@@ -30,7 +29,7 @@ function _trimTrailingLines(
 	str: string,
 	options: TrimWhitespaceSettings,
 ): string {
-	return str.trimEnd() + EOL.repeat(options.TrailingLinesKeepMax);
+	return str.trimEnd() + "\n".repeat(options.TrailingLinesKeepMax);
 }
 
 /** Leading */

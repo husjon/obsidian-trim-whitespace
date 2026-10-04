@@ -10,7 +10,6 @@ import {
 import { TrimWhitespaceSettingTab } from "./settings";
 import handleTextTrim from "./utils/trimText";
 import getCursorFenceIndices from "./utils/getCursorFenceIndices";
-import { EOL } from "os";
 import { TrimWhitespaceSettings } from "typings";
 
 const DEFAULT_SETTINGS: TrimWhitespaceSettings = {
@@ -293,9 +292,9 @@ export default class TrimWhitespace extends Plugin {
 		const options = this.settings;
 
 		if (trimmed.length + options.TrailingLinesKeepMin >= input.length) {
-			trimmed += EOL.repeat(options.TrailingLinesKeepMin);
+			trimmed += "\n".repeat(options.TrailingLinesKeepMin);
 		} else {
-			trimmed += EOL.repeat(options.TrailingLinesKeepMax);
+			trimmed += "\n".repeat(options.TrailingLinesKeepMax);
 		}
 
 		editor.setValue(trimmed);
