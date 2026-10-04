@@ -4,6 +4,10 @@
 
 Trim Whitespace trims unnecessary blank characters from your Obsidian documents. This is a common feature in code editing software, and mostly exists to pare down irksome document clutter.
 
+> [!NOTE]
+> Ownership transferred from Zack ([@zlovatt][zlovatt_profile]) on 3rd of October 2026.  
+> Thank you for starting this plugin. ❤️
+
 ---
 
 ## Features
@@ -103,6 +107,9 @@ Want to help develop or maintain this plugin? Please do! PRs and input extremely
 
 ### Credit Due
 
+- Original author Zack ([@zlovatt][zlovatt_profile]) for starting this plugin
 - Community interest sparked by [this forum post](https://forum.obsidian.md/t/trim-trailing-whitespace/17047)
 - Plugin basics grokked from [@Benature](https://github.com/Benature)'s [obsidian-text-format](https://github.com/Benature/obsidian-text-format)
 - Lots of support from the [Obsidian Community](https://obsidian.md/community) Discord server
+
+[zlovatt_profile]: https://github.com/zlovatt
