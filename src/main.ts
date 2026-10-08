@@ -1,4 +1,5 @@
 import {
+	App,
 	debounce,
 	Debouncer,
 	Editor,

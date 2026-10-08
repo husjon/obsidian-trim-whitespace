@@ -1,10 +1,5 @@
 import { TrimWhitespaceSettings } from "typings";
 
-import {
-	buildTokenReplaceMap,
-	replaceSwappedTokens,
-} from "./searchReplaceTokens";
-
 /** Trailing */
 
 /**
@@ -205,24 +200,18 @@ export default function handleTextTrim(
 	text: string,
 	settings: TrimWhitespaceSettings,
 ): string {
-	let terms: string[] = [];
 	const skipCodeBlocks = settings.PreserveCodeBlocks;
 
-	const CODE_SWAP_PREFIX = "TRIM_WHITESPACE_REPLACE_";
-	const CODE_SWAP_REGEX = [
-		// new RegExp(/`{3}([\s\S]+?)`{3}/gm), // markdown code fences
-		// new RegExp(/`{1}([\s\S]+?)`{1}/gm), // markdown code inline
-		new RegExp(/(`+)([\s\S]+?)\1/gm), // WIP improvement for arbitrary code blocks
-	];
+	const pattern = new RegExp(/(`+)([\s\S]+?)\1/gm);
+	const token = "\0\0TRIM_WHITESPACE_REPLACE\0\0";
 
+	let codeblocks: RegExpMatchArray | [] = [];
 	if (skipCodeBlocks) {
-		const swapData = buildTokenReplaceMap(
-			text,
-			CODE_SWAP_PREFIX,
-			CODE_SWAP_REGEX,
-		);
-		text = swapData.text;
-		terms = swapData.terms;
+		// Get all codeblocks in the file
+		codeblocks = text.match(pattern) || [];
+
+		// Swap all codeblocks with token
+		text = text.replace(pattern, token);
 	}
 
 	let trimmed = trimText(text, {
@@ -231,7 +220,14 @@ export default function handleTextTrim(
 	});
 
 	if (skipCodeBlocks) {
-		trimmed = replaceSwappedTokens(trimmed, CODE_SWAP_PREFIX, terms);
+		// Get tokens form the trimmed result
+		const trimmedText = Array.from(
+			trimmed.matchAll(RegExp(`${token}`, "g")),
+		);
+		// Swap out all tokens with their respective codeblocks
+		for (const [i, match] of trimmedText.entries()) {
+			trimmed = trimmed.replace(match[0], codeblocks[i]);
+		}
 	}
 
 	return trimmed;
