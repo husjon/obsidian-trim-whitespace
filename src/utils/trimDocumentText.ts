@@ -117,6 +117,9 @@ function trimWholeDocument({
 		settings,
 	);
 
+	newFromOffset = newFromOffset> result.length ? result.length : newFromOffset
+	newToOffset = newToOffset> result.length ? result.length : newToOffset
+
 	return {
 		status: result === text ? "unchanged" : "changed",
 		text: result,
