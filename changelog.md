@@ -24,6 +24,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ---
 
+## [v0.5.1] - 2026/10/10
+
+As of 3rd of October 2026 the repository was transferred to me Jon Erling (@husjon) from Zack (@zlovatt).  
+This is mainly an administrative patch to update links and fix small things with regards to the Obsidian Community listing.
+
+### Fixed
+
+- No longer use EOL from node since the editor always uses newlines
+
+---
+
 ## [v0.5.0] - 2026/08/27
 
 ### Added
@@ -130,6 +141,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Initial commit!
 
 [Unreleased]: https://github.com/husjon/obsidian-trim-whitespace/compare/main...develop
+[v0.5.1]: https://github.com/husjon/obsidian-trim-whitespace/compare/0.5.0...0.5.1
 [v0.5.0]: https://github.com/husjon/obsidian-trim-whitespace/compare/0.4.1...0.5.0
 [v0.4.1]: https://github.com/husjon/obsidian-trim-whitespace/compare/0.4.0...0.4.1
 [v0.4.0]: https://github.com/husjon/obsidian-trim-whitespace/compare/0.3.0...0.4.0
