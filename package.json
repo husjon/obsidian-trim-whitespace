@@ -9,6 +9,7 @@
 		"watchTest": "pnpm run jest --watchAll",
 		"test": "pnpm run jest",
 		"version": "node scripts/set-versions.mjs",
+		"bump-version": "pnpm version --no-git-checks --tag-version-prefix ''",
 		"lint": "eslint src"
 	},
 	"keywords": [],
