@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-trim-whitespace",
-	"version": "0.5.0",
+	"version": "0.5.1",
 	"description": "Trims unnecessary whitespace from your Obsidian documents",
 	"main": "src/main.ts",
 	"scripts": {
