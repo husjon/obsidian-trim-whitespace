@@ -134,7 +134,9 @@ function expectMarked(
 		result.fromOffset,
 		result.toOffset,
 	);
-	expect(markedResult).toEqual(expected);
+	expect(markedResult.replace("\n", "\\n")).toEqual(
+		expected.replace("\n", "\\n"),
+	);
 	expect(result.status).toBe(
 		parsed.text === result.text ? "unchanged" : "changed",
 	);
