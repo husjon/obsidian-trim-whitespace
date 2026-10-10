@@ -488,7 +488,7 @@ describe("trimming document text", () => {
 
 	test.each(WELL_FORMED_FIXTURES)(
 		"a cursor never becomes a selection when trimming %s in the whole document",
-		(name, text, settings) => {
+		(_name, text, settings) => {
 			for (let offset = 0; offset <= text.length; offset++) {
 				const result = trimDocumentText({
 					text,
@@ -509,7 +509,7 @@ describe("trimming document text", () => {
 
 	test.each(WELL_FORMED_FIXTURES)(
 		"a cursor never becomes a selection when trimming %s outside active region",
-		(name, text, settings) => {
+		(_name, text, settings) => {
 			for (let offset = 0; offset <= text.length; offset++) {
 				const result = trimDocumentText({
 					text,
@@ -530,7 +530,7 @@ describe("trimming document text", () => {
 
 	test.each(WELL_FORMED_FIXTURES)(
 		"a selection stays ordered and in bounds when trimming %s in the whole document",
-		(name, text, settings) => {
+		(_name, text, settings) => {
 			for (let fromOffset = 0; fromOffset <= text.length; fromOffset++) {
 				for (
 					let toOffset = fromOffset + 1;
@@ -559,7 +559,7 @@ describe("trimming document text", () => {
 
 	test.each(WELL_FORMED_FIXTURES)(
 		"a selection stays ordered and in bounds when trimming %s outside active region",
-		(name, text, settings) => {
+		(_name, text, settings) => {
 			for (let fromOffset = 0; fromOffset <= text.length; fromOffset++) {
 				for (
 					let toOffset = fromOffset + 1;
@@ -588,7 +588,7 @@ describe("trimming document text", () => {
 
 	test.each(WELL_FORMED_FIXTURES)(
 		"cursor offsets never move backwards when trimming %s in the whole document",
-		(name, text, settings) => {
+		(_name, text, settings) => {
 			let previousOffset = 0;
 
 			for (let offset = 0; offset <= text.length; offset++) {
