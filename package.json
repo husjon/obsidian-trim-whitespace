@@ -4,10 +4,10 @@
 	"description": "Trims unnecessary whitespace from your Obsidian documents",
 	"main": "src/main.ts",
 	"scripts": {
-		"dev": "yarn set-versions && obsidian-plugin dev src/main.ts",
-		"build": "yarn set-versions && obsidian-plugin build src/main.ts",
-		"watchTest": "yarn run jest --watchAll",
-		"test": "yarn run jest",
+		"dev": "pnpm set-versions && obsidian-plugin dev src/main.ts",
+		"build": "pnpm set-versions && obsidian-plugin build src/main.ts",
+		"watchTest": "pnpm run jest --watchAll",
+		"test": "pnpm run jest",
 		"set-versions": "node scripts/set-versions.mjs",
 		"lint": "eslint src"
 	},
