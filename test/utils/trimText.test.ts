@@ -42,6 +42,7 @@ const ALL_FALSE: TrimWhitespaceSettings = {
 
 	PreserveCodeBlocks: false,
 	PreserveIndentedLists: false,
+	PreserveCheckboxes: false,
 	ConvertNonBreakingSpaces: false,
 
 	TrimTrailingSpaces: false,
@@ -278,6 +279,29 @@ describe("trimming trailing characters", () => {
 		expect(_trimTrailingTabs(input2)).toEqual(input2_no_tab); // partial
 		expect(_trimNothing(input1)).toEqual(input1); // not trimmed!
 		expect(_trimNothing(input2)).toEqual(input2); // not trimmed!
+	});
+
+	test("preserve one trailing space after checkboxes when enabled", () => {
+		const input = "- [ ]   \n* [x]  \n1. [X]    \ntext  ";
+		const settings: TrimWhitespaceSettings = {
+			...ALL_FALSE,
+			TrimTrailingSpaces: true,
+			PreserveCheckboxes: true,
+		};
+
+		expect(handleTextTrim(input, settings)).toEqual(
+			"- [ ] \n* [x] \n1. [X] \ntext",
+		);
+	});
+
+	test("trim checkbox trailing spaces when preservation is disabled", () => {
+		const input = "- [ ]  ";
+		const settings: TrimWhitespaceSettings = {
+			...ALL_FALSE,
+			TrimTrailingSpaces: true,
+		};
+
+		expect(handleTextTrim(input, settings)).toEqual("- [ ]");
 	});
 });
 

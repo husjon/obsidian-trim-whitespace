@@ -10,13 +10,32 @@ import {
 /**
  * Trims trailing characters at end of each line
  *
- * @param str   Text to trim
- * @param chars Characters to trim
- * @return      Trimmed text
+ * @param str                Text to trim
+ * @param chars              Characters to trim
+ * @param preserveCheckboxes Whether to preserve a space after an empty checkbox
+ * @return                   Trimmed text
  */
-function _trimTrailingCharacters(str: string, chars: string[]): string {
-	const reg = new RegExp(`(${chars.join("|")})+$`, "gm");
-	return str.replace(reg, "");
+function _trimTrailingCharacters(
+	str: string,
+	chars: string[],
+	preserveCheckboxes: boolean,
+): string {
+	const reg = new RegExp(`(?:${chars.join("|")})+$`, "gm");
+	return str.replace(
+		reg,
+		(_trailingCharacters: string, offset: number, text: string) => {
+			if (!preserveCheckboxes) {
+				return "";
+			}
+
+			const lineStart = text.lastIndexOf("\n", offset - 1) + 1;
+			const line = text.slice(lineStart, offset);
+			const isCheckbox =
+				/^[ \t]*(?:[-*+]|[0-9]{1,9}[.)])[ \t]+\[[ xX]\]$/.test(line);
+
+			return isCheckbox ? " " : "";
+		},
+	);
 }
 
 /**
@@ -150,7 +169,11 @@ function trimText(text: string, options: TrimWhitespaceSettings): string {
 			trailingCharacters.push(CHAR_TAB);
 		}
 
-		trimmed = _trimTrailingCharacters(trimmed, trailingCharacters);
+		trimmed = _trimTrailingCharacters(
+			trimmed,
+			trailingCharacters,
+			options.PreserveCheckboxes,
+		);
 	}
 
 	if (options.TrimTrailingLines) {
