@@ -6,6 +6,7 @@ export interface TrimWhitespaceSettings {
 
 	PreserveCodeBlocks: boolean;
 	PreserveIndentedLists: boolean;
+	PreserveCheckboxes: boolean;
 	ConvertNonBreakingSpaces: boolean;
 
 	TrimTrailingSpaces: boolean;

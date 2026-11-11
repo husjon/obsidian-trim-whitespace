@@ -71,6 +71,7 @@ Trim Whitespace also adds a ribbon button to trim document whitespace. Hold **sh
 | Auto-Trim               | **Automatically trim document** when modified, according to the settings below. |
 | Auto-Trim Delay         | Time to wait **in seconds** before auto-trimming.                               |
 | Preserve Code Blocks    | Whether to preserve whitespace within code blocks.                              |
+| Preserve Checkboxes     | Whether to preserve one trailing space after a **checkbox**.                    |
 | Trim Trailing Spaces    | Trim **spaces** at the **end of each line**.                                    |
 | Trim Trailing Tabs      | Trim **tabs** at the **end of each line**.                                      |
 | Trim Trailing Lines     | Trim **empty** lines at the **end of the document**.                            |

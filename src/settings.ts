@@ -109,6 +109,20 @@ export class TrimWhitespaceSettingTab extends PluginSettingTab {
 		});
 
 		new Setting(containerEl)
+			.setName("Preserve checkboxes")
+			.setDesc(
+				"Preserve one trailing space if it's used after a checkbox.",
+			)
+			.addToggle((toggle) => {
+				toggle
+					.setValue(this.plugin.settings.PreserveCheckboxes)
+					.onChange(async (value) => {
+						this.plugin.settings.PreserveCheckboxes = value;
+						await this.plugin.saveSettings();
+					});
+			});
+
+		new Setting(containerEl)
 			.setName("Trim trailing spaces")
 			.setDesc("Trim spaces at the end of each line.")
 			.addToggle((toggle) => {
